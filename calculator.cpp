@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 using namespace std;
 
 int menu(){
@@ -9,7 +10,7 @@ int menu(){
   cout << "Welcome to the Calculator" << '\n';
   cout << "1. Arithmetic Operations" << endl;
   cout << "0. Exit" << '\n';
-  cout << "Enter your Choice";
+  cout << "Enter your Choice: ";
   cin >> choice;
   return choice;
 
@@ -50,23 +51,66 @@ vector<double> parseExpression(string expression){
       }
     }
   }
-
+ 
   return numbers;
 
 }
 
-double add(vector<double> numbers){
+vector<char> parseOperator(string expression){
 
-  double sum;
-  sum=numbers[0];
+  string current;
+  vector<char> operators;
 
-  for(int i=1;i<numbers.size();i++){
+  for(int i=0;i<expression.length();i++){
 
-    sum+=numbers[i];
+    if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
 
+      operators.push_back(expression[i]);
+
+    }
   }
 
+  return operators;
+}
+
+double add(double a,double b){
+
+  double sum;
+  sum=a+b;
+
   return sum;
+}
+
+double subtract(double a,double b){
+
+  double subtract;
+  subtract=a-b;
+
+  return subtract;
+}
+
+double multiply(double a,double b){
+
+  double multiplication;
+  multiplication=a*b;
+
+  return multiplication;
+}
+
+bool divide(double a,double b,double& result){
+
+  if(b==0){
+
+    return false;
+
+  }
+  else{
+
+    result=a/b;
+
+    return true;
+
+  }
 }
 
 int main(){
@@ -79,9 +123,50 @@ int main(){
 
       string expression = getExpression();
       vector<double> numbers = parseExpression(expression);
-      double sum = add(numbers);
+      vector<char> operators = parseOperator(expression);
+      double result = numbers[0];
+      bool calculationSuccessful=true;
+      
+      for(int i=0;i<operators.size();i++){
 
-      cout << sum;
+        if(operators[i]=='+'){
+      
+          result=add(result,numbers[i+1]);
+
+        }
+        else if(operators[i]=='-'){
+
+          result=subtract(result,numbers[i+1]);
+
+        }
+        else if(operators[i]=='*'){
+
+          result=multiply(result,numbers[i+1]);
+
+        }
+        else if(operators[i]=='/'){
+
+          if(divide(result,numbers[i+1],result)){
+
+          }
+          else{
+
+            cerr << "Number can not be divided by zero";
+            calculationSuccessful=false;
+            break;
+
+          }
+        }
+      }
+
+      if(calculationSuccessful){
+
+        cout << result;
+
+      }
+      else{
+
+      }
 
       break;
     }
