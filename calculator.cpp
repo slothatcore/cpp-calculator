@@ -13,7 +13,6 @@ int menu(){
   cout << "Enter your Choice: ";
   cin >> choice;
   return choice;
-
 }
 
 string getExpression(){
@@ -23,7 +22,6 @@ string getExpression(){
   cin.ignore();
   getline(cin,expression);
   return expression;
-
 }
 
 vector<double> parseExpression(string expression){
@@ -38,7 +36,6 @@ vector<double> parseExpression(string expression){
     if(expression[i]!=' '&&expression[i]!='+'&&expression[i]!='-'&&expression[i]!='*'&&expression[i]!='/'){
 
       current+=expression[i];
-
     }
     else{
 
@@ -47,13 +44,11 @@ vector<double> parseExpression(string expression){
         currentnumber=stod(current);
         numbers.push_back(currentnumber);
         current="";
-
       }
     }
   }
  
   return numbers;
-
 }
 
 vector<char> parseOperator(string expression){
@@ -66,7 +61,6 @@ vector<char> parseOperator(string expression){
     if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
 
       operators.push_back(expression[i]);
-
     }
   }
 
@@ -102,14 +96,12 @@ bool divide(double a,double b,double& result){
   if(b==0){
 
     return false;
-
   }
   else{
 
     result=a/b;
 
     return true;
-
   }
 }
 
@@ -129,43 +121,54 @@ int main(){
       
       for(int i=0;i<operators.size();i++){
 
-        if(operators[i]=='+'){
+        if(operators[i]=='*'||operators[i]=='/'){
       
-          result=add(result,numbers[i+1]);
+          if(operators[i]=='*'){
 
+            result=multiply(numbers[i],numbers[i+1]);
+            numbers[i]=result;
+            numbers.erase(numbers.begin()+i+1);
+            operators.erase(operators.begin()+i);
+            i--;
+          }
+          else{
+
+            if(divide(numbers[i],numbers[i+1],numbers[i])){
+
+              numbers.erase(numbers.begin()+i+1);
+              operators.erase(operators.begin()+i);
+              i--;
+            }
+            else{
+
+              cerr << "Number can not be divided by zero";
+              calculationSuccessful=false;
+              break;
+            }
+          }
+
+        }
+      }
+      
+      result=numbers[0];
+
+      for(int i=0;i<operators.size();i++){
+
+        if(operators[i]=='+'){
+
+          result=add(result,numbers[i+1]);
         }
         else if(operators[i]=='-'){
 
           result=subtract(result,numbers[i+1]);
-
-        }
-        else if(operators[i]=='*'){
-
-          result=multiply(result,numbers[i+1]);
-
-        }
-        else if(operators[i]=='/'){
-
-          if(divide(result,numbers[i+1],result)){
-
-          }
-          else{
-
-            cerr << "Number can not be divided by zero";
-            calculationSuccessful=false;
-            break;
-
-          }
         }
       }
 
       if(calculationSuccessful){
 
         cout << result;
-
       }
       else{
-
       }
 
       break;
@@ -173,15 +176,12 @@ int main(){
     case 0:{
 
       break;
-
     }
     default:{
 
       cout << "Invalid Choice";
-
     }
   }
 
   return 0;
-
 }
