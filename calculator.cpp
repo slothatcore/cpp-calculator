@@ -105,6 +105,82 @@ bool divide(double a,double b,double& result){
   }
 }
 
+double CalculateExpression(string expression,bool& calculationSuccessful){
+
+  vector<double> numbers = parseExpression(expression);
+  vector<char> operators = parseOperator(expression);
+  double result = numbers[0];
+
+  for(int i=0;i<operators.size();i++){
+
+    if(operators[i]=='*'||operators[i]=='/'){
+
+      if(operators[i]=='*'){
+
+        result = multiply(numbers[i],numbers[i+1]);
+        numbers[i]=result;
+        numbers.erase(numbers.begin()+i+1);
+        operators.erase(operators.begin()+i);
+        i--;
+      }
+      else{
+
+        if(divide(numbers[i],numbers[i+1],numbers[i])){
+
+          numbers.erase(numbers.begin()+i+1);
+          operators.erase(operators.begin()+i);
+          i--;
+        }
+        else{
+
+          cerr << "Number can not be divided by zero";
+          calculationSuccessful = false;
+        }
+      }
+    }
+  }
+
+  result = numbers[0];
+
+  for(int i=0;i<operators.size();i++){
+
+    if(operators[i]=='+'){
+
+      result = add(result,numbers[i+1]);
+    }
+    else if(operators[i]=='-'){
+
+      result = subtract(result,numbers[i+1]);
+    }
+  }
+  
+  return result;
+}
+
+void handleParanthesis(string& expression,bool& calculationSuccessful){
+
+  int index1;
+  int index2;
+
+  for(int i=0;i<expression.length();i++){
+
+    if(expression[i]=='('){
+
+      index1=i;
+    }
+    else if(expression[i]==')'){
+
+      index2=i;
+    }
+  }
+
+  string inside=expression.substr(index1+1,index2-index1-1);
+  double result = CalculateExpression(inside,calculationSuccessful);
+  
+  string final=to_string(result);
+  expression.replace(index1,index2-index1+1,final);
+}
+
 int main(){
 
   int choice = menu();
@@ -114,55 +190,9 @@ int main(){
     case 1:{
 
       string expression = getExpression();
-      vector<double> numbers = parseExpression(expression);
-      vector<char> operators = parseOperator(expression);
-      double result = numbers[0];
-      bool calculationSuccessful=true;
-      
-      for(int i=0;i<operators.size();i++){
-
-        if(operators[i]=='*'||operators[i]=='/'){
-      
-          if(operators[i]=='*'){
-
-            result=multiply(numbers[i],numbers[i+1]);
-            numbers[i]=result;
-            numbers.erase(numbers.begin()+i+1);
-            operators.erase(operators.begin()+i);
-            i--;
-          }
-          else{
-
-            if(divide(numbers[i],numbers[i+1],numbers[i])){
-
-              numbers.erase(numbers.begin()+i+1);
-              operators.erase(operators.begin()+i);
-              i--;
-            }
-            else{
-
-              cerr << "Number can not be divided by zero";
-              calculationSuccessful=false;
-              break;
-            }
-          }
-
-        }
-      }
-      
-      result=numbers[0];
-
-      for(int i=0;i<operators.size();i++){
-
-        if(operators[i]=='+'){
-
-          result=add(result,numbers[i+1]);
-        }
-        else if(operators[i]=='-'){
-
-          result=subtract(result,numbers[i+1]);
-        }
-      }
+      bool calculationSuccessful = true;
+      handleParanthesis(expression,calculationSuccessful);
+      double result = CalculateExpression(expression, calculationSuccessful);
 
       if(calculationSuccessful){
 
