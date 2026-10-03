@@ -17,7 +17,10 @@ and operator precedence actually work.
 - Expression parsing
 - Support for spaces in expressions
 - Operator precedence
+- Parentheses
+- Nested parentheses
 - Division by zero handling
+- Invalid parenthesis detection
 
 ## How It Works
 
@@ -53,10 +56,29 @@ becomes:
 and finally:
 18
 
+The calculator also supports parentheses.
+
+Parentheses are evaluated before the rest of the expression.
+
+For example:
+
+10 + (5 * 2) - 3
+
+The expression inside the parentheses is calculated first:
+
+10 + 10 - 3
+
+Result:
+
+17
+
+Nested parentheses are handled using a stack to find matching pairs.
+
 ## Technologies Used
 
 - C++
 - STL Vectors
+- STL Stack
 - Strings
 - Functions
 - References
@@ -93,12 +115,25 @@ While building this project, I have learned and used:
 - vector.erase()
 - Iterators and vector.begin()
 - Operator precedence
+- Parentheses handling
+- Nested parentheses
+- STL stack
 - Git and GitHub
+
+## Current Status
+
+The calculator currently supports basic arithmetic, decimal numbers,
+operator precedence, parentheses, and nested parentheses.
+
+Nested parentheses are handled using a stack to find matching pairs.
+
+The next step is improving input validation so that malformed
+expressions are handled properly.
 
 ## Future Plans
 
 I am planning to keep expanding this project step by step.
-- Add parentheses
+- Handle malformed expressions
 - Add scientific operations
 - Add better input validation
 - Add a quadratic equation solver
