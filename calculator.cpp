@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <stack>
 
 using namespace std;
 
@@ -67,6 +68,19 @@ vector<char> parseOperator(string expression){
   return operators;
 }
 
+bool hasParenthesis(string expression){
+
+  for(int i=0;i<expression.length();i++){
+
+    if(expression[i]=='('||expression[i]==')'){
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
 double add(double a,double b){
 
   double sum;
@@ -109,51 +123,56 @@ double CalculateExpression(string expression,bool& calculationSuccessful){
 
   vector<double> numbers = parseExpression(expression);
   vector<char> operators = parseOperator(expression);
-  double result = numbers[0];
+  double result;
+  
+  if(numbers.size()!=0){
+    
+    result = numbers[0];
 
-  for(int i=0;i<operators.size();i++){
+    for(int i=0;i<operators.size();i++){
 
-    if(operators[i]=='*'||operators[i]=='/'){
+      if(operators[i]=='*'||operators[i]=='/'){
 
-      if(operators[i]=='*'){
+        if(operators[i]=='*'){
 
-        result = multiply(numbers[i],numbers[i+1]);
-        numbers[i]=result;
-        numbers.erase(numbers.begin()+i+1);
-        operators.erase(operators.begin()+i);
-        i--;
-      }
-      else{
-
-        if(divide(numbers[i],numbers[i+1],numbers[i])){
-
+          result = multiply(numbers[i],numbers[i+1]);
+          numbers[i]=result;
           numbers.erase(numbers.begin()+i+1);
           operators.erase(operators.begin()+i);
           i--;
         }
         else{
 
-          cerr << "Number can not be divided by zero";
-          calculationSuccessful = false;
+          if(divide(numbers[i],numbers[i+1],numbers[i])){
+
+            numbers.erase(numbers.begin()+i+1);
+            operators.erase(operators.begin()+i);
+            i--;
+          }
+          else{
+
+            cerr << "Number can not be divided by zero";
+            calculationSuccessful = false;
+          }
         }
+      }
+    }
+
+    result = numbers[0];
+
+    for(int i=0;i<operators.size();i++){
+
+      if(operators[i]=='+'){
+
+        result = add(result,numbers[i+1]);
+      }
+      else if(operators[i]=='-'){
+
+        result = subtract(result,numbers[i+1]);
       }
     }
   }
 
-  result = numbers[0];
-
-  for(int i=0;i<operators.size();i++){
-
-    if(operators[i]=='+'){
-
-      result = add(result,numbers[i+1]);
-    }
-    else if(operators[i]=='-'){
-
-      result = subtract(result,numbers[i+1]);
-    }
-  }
-  
   return result;
 }
 
@@ -161,24 +180,57 @@ void handleParanthesis(string& expression,bool& calculationSuccessful){
 
   int index1;
   int index2;
+  
+  while(hasParenthesis(expression)&&calculationSuccessful){
 
-  for(int i=0;i<expression.length();i++){
+    stack<int> parenthesis;
+    bool pairfound=false;
+    
+    for(int i=0;i<expression.length();i++){
 
-    if(expression[i]=='('){
+      if(expression[i]=='('){
 
-      index1=i;
+        parenthesis.push(i);
+      }
+      else if(expression[i]==')'){
+
+        if(parenthesis.empty()){
+
+          cerr << "Invalid parenthesis";
+          calculationSuccessful=false;
+
+          break;
+        }
+        else{
+          index2=i;
+          index1=parenthesis.top();
+          parenthesis.pop();
+          pairfound=true;
+
+          break;
+        }
+      }
     }
-    else if(expression[i]==')'){
 
-      index2=i;
+    if(!pairfound){
+
+      if(!parenthesis.empty()){
+
+        cerr << "Invalid parenthesis";
+        calculationSuccessful=false;
+
+        break;
+      }
+    }
+
+    if(calculationSuccessful&&pairfound){
+      string inside=expression.substr(index1+1,index2-index1-1);
+      double result = CalculateExpression(inside,calculationSuccessful);
+  
+      string final=to_string(result);
+      expression.replace(index1,index2-index1+1,final);
     }
   }
-
-  string inside=expression.substr(index1+1,index2-index1-1);
-  double result = CalculateExpression(inside,calculationSuccessful);
-  
-  string final=to_string(result);
-  expression.replace(index1,index2-index1+1,final);
 }
 
 int main(){
@@ -191,8 +243,21 @@ int main(){
 
       string expression = getExpression();
       bool calculationSuccessful = true;
-      handleParanthesis(expression,calculationSuccessful);
-      double result = CalculateExpression(expression, calculationSuccessful);
+      double result;
+
+      if(hasParenthesis(expression)){
+
+        handleParanthesis(expression,calculationSuccessful);
+        
+        if(calculationSuccessful){
+          
+          result=CalculateExpression(expression,calculationSuccessful);
+        }
+      }
+      else{
+
+        result=CalculateExpression(expression,calculationSuccessful);
+      }
 
       if(calculationSuccessful){
 
