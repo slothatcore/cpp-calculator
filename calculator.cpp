@@ -245,28 +245,36 @@ int main(){
       bool calculationSuccessful = true;
       double result;
 
-      if(hasParenthesis(expression)){
+      if(expression.length()!=0){
 
-        handleParanthesis(expression,calculationSuccessful);
+        if(hasParenthesis(expression)){
+
+          handleParanthesis(expression,calculationSuccessful);
         
-        if(calculationSuccessful){
+          if(calculationSuccessful){
           
+            result=CalculateExpression(expression,calculationSuccessful);
+          }
+        }
+        else{
+
           result=CalculateExpression(expression,calculationSuccessful);
         }
+
+        if(calculationSuccessful){
+
+          cout << result;
+        }
+        else{
+        }
+
+        break;
       }
       else{
 
-        result=CalculateExpression(expression,calculationSuccessful);
+        cerr << "Invalid expression";
+        break;
       }
-
-      if(calculationSuccessful){
-
-        cout << result;
-      }
-      else{
-      }
-
-      break;
     }
     case 0:{
 
