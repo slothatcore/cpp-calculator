@@ -172,6 +172,11 @@ double CalculateExpression(string expression,bool& calculationSuccessful){
       }
     }
   }
+  else{
+
+    cerr << "Invalid expression";
+    calculationSuccessful = false;
+  }
 
   return result;
 }
@@ -225,10 +230,19 @@ void handleParanthesis(string& expression,bool& calculationSuccessful){
 
     if(calculationSuccessful&&pairfound){
       string inside=expression.substr(index1+1,index2-index1-1);
-      double result = CalculateExpression(inside,calculationSuccessful);
+      
+      if(!inside.empty()){
+        
+        double result = CalculateExpression(inside,calculationSuccessful);
   
-      string final=to_string(result);
-      expression.replace(index1,index2-index1+1,final);
+        string final=to_string(result);
+        expression.replace(index1,index2-index1+1,final);
+      }
+      else{
+
+        cerr << "Invalid parenthesis";
+        calculationSuccessful=false;
+      }
     }
   }
 }
