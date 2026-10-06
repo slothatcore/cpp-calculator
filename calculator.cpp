@@ -52,16 +52,38 @@ vector<double> parseExpression(string expression){
   return numbers;
 }
 
-vector<char> parseOperator(string expression){
+vector<char> parseOperator(string expression,bool& calculationSuccessful){
 
   string current;
   vector<char> operators;
+  int length = expression.length();
 
-  for(int i=0;i<expression.length();i++){
+  if(expression[0]=='+'||expression[0]=='*'||expression[0]=='/'){
 
-    if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
+    cerr << "Invalid Expression";
+    calculationSuccessful = false;
+  }
+  else if(expression[length-1]=='+'||expression[length-1]=='-'||expression[length-1]=='*'||expression[length-1]=='/'){
 
-      operators.push_back(expression[i]);
+    cerr << "Expression ending with an operator";
+    calculationSuccessful = false;
+  }
+  else{
+
+    for(int i=0;i<length;i++){
+
+      if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
+
+        if(expression[i+1]=='+'||expression[i+1]=='/'||expression[i+1]=='*'){
+
+          cerr << "Invalid Expression";
+          calculationSuccessful = false;
+        }
+        else{
+
+          operators.push_back(expression[i]);
+        }
+      }
     }
   }
 
@@ -122,7 +144,7 @@ bool divide(double a,double b,double& result){
 double CalculateExpression(string expression,bool& calculationSuccessful){
 
   vector<double> numbers = parseExpression(expression);
-  vector<char> operators = parseOperator(expression);
+  vector<char> operators = parseOperator(expression,calculationSuccessful);
   double result;
   
   if(numbers.size()!=0){
