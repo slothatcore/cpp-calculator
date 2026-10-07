@@ -25,26 +25,34 @@ string getExpression(){
   return expression;
 }
 
-vector<double> parseExpression(string expression){
+vector<double> parseExpression(string expression,bool& calculationSuccessful){
 
   expression+=' ';
   string current;
   double currentnumber;
   vector<double> numbers;
 
-  for(int i=0;i<expression.length();i++){
+  if(expression[0]=='+'||expression[0]=='-'||expression[0]=='*'||expression[0]=='/'){
 
-    if(expression[i]!=' '&&expression[i]!='+'&&expression[i]!='-'&&expression[i]!='*'&&expression[i]!='/'){
+    cerr << "Expression starting with an operator";
+    calculationSuccessful = false;
+  }
+  else{
 
-      current+=expression[i];
-    }
-    else{
+    for(int i=0;i<expression.length();i++){
 
-      if(current.length()!=0){
+      if(expression[i]!=' '&&expression[i]!='+'&&expression[i]!='-'&&expression[i]!='*'&&expression[i]!='/'){
 
-        currentnumber=stod(current);
-        numbers.push_back(currentnumber);
-        current="";
+        current+=expression[i];
+      }
+      else{
+
+        if(current.length()!=0){
+
+          currentnumber=stod(current);
+          numbers.push_back(currentnumber);
+          current="";
+        }
       }
     }
   }
@@ -56,32 +64,27 @@ vector<char> parseOperator(string expression,bool& calculationSuccessful){
 
   string current;
   vector<char> operators;
-  int length = expression.length();
+  char last = expression[expression.length()-1];
 
-  if(expression[0]=='+'||expression[0]=='*'||expression[0]=='/'){
-
-    cerr << "Invalid Expression";
-    calculationSuccessful = false;
-  }
-  else if(expression[length-1]=='+'||expression[length-1]=='-'||expression[length-1]=='*'||expression[length-1]=='/'){
+  if(last=='+'||last=='-'||last=='/'||last=='*'){
 
     cerr << "Expression ending with an operator";
     calculationSuccessful = false;
   }
   else{
-
-    for(int i=0;i<length;i++){
+    
+    for(int i=0;i<expression.length();i++){
 
       if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
 
-        if(expression[i+1]=='+'||expression[i+1]=='/'||expression[i+1]=='*'){
-
-          cerr << "Invalid Expression";
-          calculationSuccessful = false;
+        if(expression[i+1]!='+'&&expression[i+1]!='-'&&expression[i+1]!='*'&&expression[i+1]!='/'){
+          
+          operators.push_back(expression[i]);
         }
         else{
 
-          operators.push_back(expression[i]);
+          cerr << "More than one operator together";
+          calculationSuccessful = false;
         }
       }
     }
@@ -143,7 +146,7 @@ bool divide(double a,double b,double& result){
 
 double CalculateExpression(string expression,bool& calculationSuccessful){
 
-  vector<double> numbers = parseExpression(expression);
+  vector<double> numbers = parseExpression(expression,calculationSuccessful);
   vector<char> operators = parseOperator(expression,calculationSuccessful);
   double result;
   
@@ -193,11 +196,6 @@ double CalculateExpression(string expression,bool& calculationSuccessful){
         result = subtract(result,numbers[i+1]);
       }
     }
-  }
-  else{
-
-    cerr << "Invalid expression";
-    calculationSuccessful = false;
   }
 
   return result;
@@ -256,14 +254,13 @@ void handleParanthesis(string& expression,bool& calculationSuccessful){
       if(!inside.empty()){
         
         double result = CalculateExpression(inside,calculationSuccessful);
-  
         string final=to_string(result);
         expression.replace(index1,index2-index1+1,final);
       }
       else{
 
         cerr << "Invalid parenthesis";
-        calculationSuccessful=false;
+        calculationSuccessful = false;
       }
     }
   }
