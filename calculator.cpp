@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <cctype>
 
 using namespace std;
 
@@ -41,7 +42,13 @@ vector<double> parseExpression(string expression,bool& calculationSuccessful){
 
     for(int i=0;i<expression.length();i++){
 
-      if(expression[i]!=' '&&expression[i]!='+'&&expression[i]!='-'&&expression[i]!='*'&&expression[i]!='/'){
+      if(isalpha(expression[i])){
+
+        cerr << "No Alphabet allowed in Arithmetic";
+        calculationSuccessful = false;
+        break;
+      }
+      else if(expression[i]!=' '&&expression[i]!='+'&&expression[i]!='-'&&expression[i]!='*'&&expression[i]!='/'){
 
         current+=expression[i];
       }
@@ -66,25 +73,33 @@ vector<char> parseOperator(string expression,bool& calculationSuccessful){
   vector<char> operators;
   char last = expression[expression.length()-1];
 
-  if(last=='+'||last=='-'||last=='/'||last=='*'){
+  if(calculationSuccessful){
+  
+    if(last=='+'||last=='-'||last=='/'||last=='*'){
 
-    cerr << "Expression ending with an operator";
-    calculationSuccessful = false;
-  }
-  else{
+      cerr << "Expression ending with an operator";
+      calculationSuccessful = false;
+    }
+    else if(last==' '){
+
+      cerr << "Expression ending with a whitespace";
+      calculationSuccessful = false;
+    }
+    else{
     
-    for(int i=0;i+1<expression.length();i++){
+      for(int i=0;i+1<expression.length();i++){
 
-      if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
+        if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
 
-        if(expression[i+1]!='+'&&expression[i+1]!='-'&&expression[i+1]!='*'&&expression[i+1]!='/'){
+          if(expression[i+1]!='+'&&expression[i+1]!='-'&&expression[i+1]!='*'&&expression[i+1]!='/'){
           
-          operators.push_back(expression[i]);
-        }
-        else{
+            operators.push_back(expression[i]);
+          }
+          else{
 
-          cerr << "More than one operator together";
-          calculationSuccessful = false;
+            cerr << "More than one operator together";
+            calculationSuccessful = false;
+          }
         }
       }
     }
@@ -150,57 +165,60 @@ double CalculateExpression(string expression,bool& calculationSuccessful){
   vector<char> operators = parseOperator(expression,calculationSuccessful);
   double result;
   
-  if(numbers.size()!=0){
+  if(calculationSuccessful){
+  
+    if(numbers.size()!=0){
     
-    result = numbers[0];
+      result = numbers[0];
 
-    for(int i=0;i<operators.size();i++){
+      for(int i=0;i<operators.size();i++){
 
-      if(operators[i]=='*'||operators[i]=='/'){
+        if(operators[i]=='*'||operators[i]=='/'){
 
-        if(operators[i]=='*'){
+          if(operators[i]=='*'){
 
-          result = multiply(numbers[i],numbers[i+1]);
-          numbers[i]=result;
-          numbers.erase(numbers.begin()+i+1);
-          operators.erase(operators.begin()+i);
-          i--;
-        }
-        else{
-
-          if(divide(numbers[i],numbers[i+1],numbers[i])){
-
+            result = multiply(numbers[i],numbers[i+1]);
+            numbers[i]=result;
             numbers.erase(numbers.begin()+i+1);
             operators.erase(operators.begin()+i);
             i--;
           }
           else{
 
-            cerr << "Number can not be divided by zero";
-            calculationSuccessful = false;
+            if(divide(numbers[i],numbers[i+1],numbers[i])){
+
+              numbers.erase(numbers.begin()+i+1);
+              operators.erase(operators.begin()+i);
+              i--;
+            }
+            else{
+
+              cerr << "Number can not be divided by zero";
+              calculationSuccessful = false;
+            }
           }
         }
       }
-    }
 
-    result = numbers[0];
+      result = numbers[0];
 
-    for(int i=0;i<operators.size();i++){
+      for(int i=0;i<operators.size();i++){
 
-      if(operators[i]=='+'){
+        if(operators[i]=='+'){
 
-        result = add(result,numbers[i+1]);
+          result = add(result,numbers[i+1]);
+        }
+        else if(operators[i]=='-'){
+
+          result = subtract(result,numbers[i+1]);
+        }
       }
-      else if(operators[i]=='-'){
-
-        result = subtract(result,numbers[i+1]);
-      }
     }
-  }
-  else{
+    else{
 
-    cerr << "Invalid Expression";
-    calculationSuccessful = false;
+      cerr << "Invalid Expression";
+      calculationSuccessful = false;
+    }
   }
 
   return result;
