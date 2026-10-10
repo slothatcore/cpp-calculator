@@ -73,7 +73,7 @@ vector<char> parseOperator(string expression,bool& calculationSuccessful){
   }
   else{
     
-    for(int i=0;i<expression.length();i++){
+    for(int i=0;i+1<expression.length();i++){
 
       if(expression[i]=='+'||expression[i]=='-'||expression[i]=='*'||expression[i]=='/'){
 
@@ -196,6 +196,11 @@ double CalculateExpression(string expression,bool& calculationSuccessful){
         result = subtract(result,numbers[i+1]);
       }
     }
+  }
+  else{
+
+    cerr << "Invalid Expression";
+    calculationSuccessful = false;
   }
 
   return result;
