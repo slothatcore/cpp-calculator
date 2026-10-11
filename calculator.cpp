@@ -71,18 +71,18 @@ vector<char> parseOperator(string expression,bool& calculationSuccessful){
 
   string current;
   vector<char> operators;
-  char last = expression[expression.length()-1];
+  int i = expression.length()-1;
+
+  while(i>=0&&isspace(expression[i])){
+
+    i--;
+  }
 
   if(calculationSuccessful){
   
-    if(last=='+'||last=='-'||last=='/'||last=='*'){
+    if(expression[i]=='+'||expression[i]=='-'||expression[i]=='/'||expression[i]=='*'){
 
       cerr << "Expression ending with an operator";
-      calculationSuccessful = false;
-    }
-    else if(last==' '){
-
-      cerr << "Expression ending with a whitespace";
       calculationSuccessful = false;
     }
     else{
