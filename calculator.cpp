@@ -32,11 +32,12 @@ vector<double> parseExpression(string expression,bool& calculationSuccessful){
   string current;
   double currentnumber;
   vector<double> numbers;
+  bool hasDecimal=false;
 
   if(expression[0]=='+'||expression[0]=='-'||expression[0]=='*'||expression[0]=='/'){
 
     cerr << "Expression starting with an operator";
-    calculationSuccessful = false;
+    calculationSuccessful=false;
   }
   else{
 
@@ -45,10 +46,24 @@ vector<double> parseExpression(string expression,bool& calculationSuccessful){
       if(isalpha(expression[i])){
 
         cerr << "No Alphabet allowed in Arithmetic";
-        calculationSuccessful = false;
+        calculationSuccessful=false;
         break;
       }
       else if(expression[i]!=' '&&expression[i]!='+'&&expression[i]!='-'&&expression[i]!='*'&&expression[i]!='/'){
+
+        if(expression[i]=='.'){
+
+          if(hasDecimal){
+
+            cerr << "Multiple Period";
+            calculationSuccessful=false;
+          }
+          else{
+
+            hasDecimal=true;
+            current+=expression[i];
+          }
+        }
 
         current+=expression[i];
       }
@@ -56,6 +71,7 @@ vector<double> parseExpression(string expression,bool& calculationSuccessful){
 
         if(current.length()!=0){
 
+          hasDecimal=false;
           currentnumber=stod(current);
           numbers.push_back(currentnumber);
           current="";
